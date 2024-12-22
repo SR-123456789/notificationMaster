@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,26 +6,58 @@ import {
   StyleSheet,
   Modal,
   Animated,
+  Linking,
 } from "react-native";
 import { ArupakaHeaderView } from "react-native-header-arupaka-r";
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/common/Header";
 import AddNotificationDialog from "@/components/common/AddNotificationDialog";
+import { requestNotificationPermission } from "../../services/notificationService";
+import { defineGeofenceTask } from "../../services/taskManager";
+import * as Notifications from "expo-notifications";
+
+const GEOFENCE_TASK = "geofenceTask";
 
 const Index = () => {
-  const [visibleAddNotificationDialog, setVisibleAddNotificationDialog] = useState<boolean>(false);
+  const [visibleAddNotificationDialog, setVisibleAddNotificationDialog] =
+    useState<boolean>(false);
 
+  // useEffect(() => {
+  //   requestNotificationPermission();
+  //   defineGeofenceTask(GEOFENCE_TASK);
+
+  //   // 通知タップ時のリスナーを設定
+  //   const subscription = Notifications.addNotificationResponseReceivedListener(
+  //     (response) => {
+  //       const url = response.notification.request.content.data?.url;
+  //       if (url) {
+  //         Linking.openURL(url); // URLを開く
+  //       }
+  //     }
+  //   );
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
 
   return (
     <>
-     
       <ArupakaHeaderView
         headerColor="rgba(52, 211, 153, 0.7)"
-        content={() => <Header title={"WEB通知一覧"} onCreateNotification={()=>setVisibleAddNotificationDialog(true)}/>}
+        content={() => (
+          <Header
+            title={"WEB通知一覧"}
+            onCreateNotification={() => setVisibleAddNotificationDialog(true)}
+          />
+        )}
       >
         <View style={{ flex: 1, paddingTop: 32, alignItems: "center" }}>
           {/* 新規WEB通知ボタン */}
-          <TouchableOpacity style={{ width: 250 }} onPress={()=>setVisibleAddNotificationDialog(true)}>
+          <TouchableOpacity
+            style={{ width: 250 }}
+            onPress={() => setVisibleAddNotificationDialog(true)}
+          >
             <LinearGradient
               colors={["#34D399", "#059669"]} // 緑系グラデーション
               style={{
@@ -44,7 +76,10 @@ const Index = () => {
           </TouchableOpacity>
         </View>
       </ArupakaHeaderView>
-      <AddNotificationDialog isOpen={visibleAddNotificationDialog} onClose={()=>setVisibleAddNotificationDialog(false)}/>
+      <AddNotificationDialog
+        isOpen={visibleAddNotificationDialog}
+        onClose={() => setVisibleAddNotificationDialog(false)}
+      />
     </>
   );
 };

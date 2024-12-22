@@ -5,13 +5,18 @@ import {
   Animated,
   TouchableOpacity,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  Alert,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import AddNotificationSlectBottom from "../AddNotification/AddNotificationSelectBottom";
 import AddNotificationInputWebPage from "../AddNotification/AddNotificationInputWebPage";
 import AddNotificationSelectLocation from "../AddNotification/AddNotficationSelecrLocation";
 import AddNotificationInputTime from "../AddNotification/AddNotficationInputTime";
+import { setupGeofences } from "../../services/locationService";
+import { NotificationRegion } from "../../types/types";
+
+const GEOFENCE_TASK = "geofenceTask";
 
 interface AddNotificationDialogProps {
   isOpen: boolean;
@@ -30,7 +35,14 @@ const AddNotificationDialog = ({
   const [visible, setVisible] = useState(isOpen);
   const slideAnim = useRef(new Animated.Value(1000)).current; // useRefで保持し続ける
   const [showNotificationMethod, setShowNotificationMethod] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<"" | "clock" | "location">("");
+  const [selectedMethod, setSelectedMethod] = useState<
+    "" | "clock" | "location"
+  >("");
+  const [notificationURL, setNotificationURL] = useState("");
+  const [notificationTime, setNotificationTime] = useState("");
+  const [notificationLocation, setNotificationLocation] = useState<No | null>(
+    null
+  );
 
   const openModal = () => {
     setVisible(true);
@@ -42,6 +54,7 @@ const AddNotificationDialog = ({
   };
 
   const closeModal = () => {
+    // Alert.alert(JSON.stringify(notificationLocation));
     Animated.timing(slideAnim, {
       toValue: 1000, // 非表示位置
       duration: 300,
@@ -51,8 +64,45 @@ const AddNotificationDialog = ({
   };
 
   const onInputUrl = (url: string) => {
+    setNotificationURL(url);
     setShowNotificationMethod(true);
-  }
+  };
+
+  const [geofences, setGeofences] = useState<NotificationRegion[]>([
+    {
+      identifier: "Tokyo Station",
+      latitude: 35.6812,
+      longitude: 139.7671,
+      radius: 100,
+      notifyOnEnter: true,
+      notifyOnExit: false,
+      url: "https://www.jreast.co.jp/",
+    },
+  ]);
+
+  const addGeofenceRegion = () => {
+    // sendNotification("通知タイトル", "これはローカル通知の例です");
+    // if (!notificationLocation) return;
+    // if (!geofences) {
+    //   Alert.alert('ジオフェンスを設定してください');
+    //   return;
+    // }
+
+    setupGeofences(
+      [
+        {
+          identifier: "Tokyo Station",
+          latitude: notificationLocation.latitude,
+          longitude: notificationLocation.longitude,
+          radius: notificationLocation.radius,
+          notifyOnEnter: notificationLocation.notifyOnEnter,
+          notifyOnExit: notificationLocation.notifyOnExit,
+          url: notificationURL,
+        },
+      ],
+      GEOFENCE_TASK
+    );
+  };
 
   return (
     <Modal
@@ -110,6 +160,7 @@ const AddNotificationDialog = ({
                 padding: 1,
                 borderRadius: 4,
               }}
+              onPress={addGeofenceRegion}
             >
               <Text
                 style={{ color: "#059669", fontWeight: "bold", fontSize: 16 }}
@@ -118,12 +169,22 @@ const AddNotificationDialog = ({
               </Text>
             </TouchableOpacity>
           </View>
-          <ScrollView style={{paddingHorizontal:20}}>
-            <AddNotificationInputWebPage onInputUrl={onInputUrl}/>
-            <AddNotificationSlectBottom isShow={showNotificationMethod} onSelectMode={setSelectedMethod}/>
+          <ScrollView style={{ paddingHorizontal: 20 }}>
+            <AddNotificationInputWebPage onInputUrl={onInputUrl} />
+            <AddNotificationSlectBottom
+              isShow={showNotificationMethod}
+              onSelectMode={setSelectedMethod}
+            />
             {selectedMethod === "clock" && <AddNotificationInputTime />}
-            {selectedMethod === "location" &&<AddNotificationSelectLocation />}
-            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+            {selectedMethod === "location" && (
+              <AddNotificationSelectLocation
+                onLocationSelect={setNotificationLocation}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={addGeofenceRegion}
+            >
               <Text style={styles.closeButtonText}>登録</Text>
             </TouchableOpacity>
           </ScrollView>

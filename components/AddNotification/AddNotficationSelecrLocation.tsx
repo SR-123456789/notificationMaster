@@ -44,7 +44,7 @@ const AddNotificationSelectLocation = ({ onLocationSelect }: AddNotificationSele
       } else {
         alert('場所が見つかりませんでした');
       }
-    } catch (error) {
+    } catch (error: any) {
       alert('エラーが発生しました: ' + error.message);
     }
   };
@@ -67,6 +67,8 @@ const AddNotificationSelectLocation = ({ onLocationSelect }: AddNotificationSele
         ...prev,
         latitude: newRegion.latitude,
         longitude: newRegion.longitude,
+        latitudeDelta: newRegion.latitudeDelta,
+        longitudeDelta: newRegion.longitudeDelta,
       }));
       Animated.timing(markerY, {
         toValue: 0, // 元の位置に戻る
@@ -76,12 +78,22 @@ const AddNotificationSelectLocation = ({ onLocationSelect }: AddNotificationSele
         isAnimating.current = false; // アニメーション終了
         setShowPin(false); // ピンを非表示
       });
+      onLocationSelect({
+        latitude: newRegion.latitude,
+        longitude: newRegion.longitude,
+        radius,
+      });
     },
     [markerY]
   );
 
-  const handleRadiusChange = (value: any) => {
+  const handleRadiusChange = (value: number) => {
     setRadius(value);
+    onLocationSelect({
+      latitude: region.latitude,
+      longitude: region.longitude,
+      radius:value,
+    });
   };
 
   const handleSave = () => {

@@ -7,9 +7,17 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "jsEngine": "hermes",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.preparation.hirakegoma",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "位置情報を使用します。",
+        "NSLocationAlwaysUsageDescription": "バックグラウンドで位置情報を使用します。",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "位置情報を常に使用します。",
+        "UIBackgroundModes": ["location"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,6 +31,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-dev-launcher",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -36,6 +50,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ebb090cd-d9e9-40c4-aacf-215b86e9c3d1"
+      }
     }
   }
 }
