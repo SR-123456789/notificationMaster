@@ -13,7 +13,10 @@ import AddNotificationSlectBottom from "../AddNotification/AddNotificationSelect
 import AddNotificationInputWebPage from "../AddNotification/AddNotificationInputWebPage";
 import AddNotificationSelectLocation from "../AddNotification/AddNotficationSelecrLocation";
 import AddNotificationInputTime from "../AddNotification/AddNotficationInputTime";
-import { reverseGeocodeWithNominatim, setupGeofences } from "../../services/locationService";
+import {
+  reverseGeocodeWithNominatim,
+  setupGeofences,
+} from "../../services/locationService";
 import { NotificationListItem, NotificationRegion } from "../../types/types";
 import { useDispatch, useSelector } from "react-redux";
 import "react-native-get-random-values";
@@ -33,7 +36,9 @@ const AddNotificationDialog = ({
   onClose,
 }: AddNotificationDialogProps) => {
   const dispatch = useDispatch();
-  const notificationList =useSelector((state: RootState) => state.notifications.notifications);
+  const notificationList = useSelector(
+    (state: RootState) => state.notifications.notifications
+  );
   useEffect(() => {
     if (isOpen) openModal();
     if (!isOpen) closeModal;
@@ -75,23 +80,25 @@ const AddNotificationDialog = ({
     setShowNotificationMethod(true);
   };
 
-  const [geofences, setGeofences] = useState<NotificationRegion[]>([
-    {
-      identifier: "Tokyo Station",
-      latitude: 35.6812,
-      longitude: 139.7671,
-      radius: 100,
-      notifyOnEnter: true,
-      notifyOnExit: false,
-      url: "https://www.jreast.co.jp/",
-    },
-  ]);
+  const addGeofenceRegion = async () => {
+    // Todo: 記入されていない情報の追加記載
 
-  const addGeofenceRegion = async() => {
+    const beforeNotificationList = notificationList.filter(
+      (item) => item.type === "location" && item.isActive === true
+    );
 
-    const notification:NotificationListItem = {
-      type:"location",
-      title: await reverseGeocodeWithNominatim(notificationLocation.latitude, notificationLocation.longitude),
+    if (beforeNotificationList.length >= 20) {
+      Alert.alert("位置通知の登録は20個までです");
+      return;
+    }
+
+    const notification: NotificationListItem = {
+      type: "location",
+      isActive: true,
+      title: await reverseGeocodeWithNominatim(
+        notificationLocation.latitude,
+        notificationLocation.longitude
+      ),
       id: uuidv4(),
       notificationID: uuidv4(),
       url: notificationURL,
@@ -103,10 +110,9 @@ const AddNotificationDialog = ({
       notifyOnExit: notificationLocation.notifyOnExit,
     };
 
-    const beforeNotificationList = notificationList;
-    dispatch(addNotification(notification))
-    const NewNotificationList=beforeNotificationList.push(notification);
-    console.log("now",NewNotificationList);
+    dispatch(addNotification(notification));
+    beforeNotificationList.push(notification);
+    console.log("now", beforeNotificationList);
 
     // if (!notificationLocation) return;
     // if (!geofences) {
@@ -114,20 +120,7 @@ const AddNotificationDialog = ({
     //   return;
     // }
 
-    // setupGeofences(
-    //   [
-    //     {
-    //       identifier: "Tokyo Station",
-    //       latitude: notificationLocation.latitude,
-    //       longitude: notificationLocation.longitude,
-    //       radius: notificationLocation.radius,
-    //       notifyOnEnter: notificationLocation.notifyOnEnter,
-    //       notifyOnExit: notificationLocation.notifyOnExit,
-    //       url: notificationURL,
-    //     },
-    //   ],
-    //   GEOFENCE_TASK
-    // );
+    setupGeofences(beforeNotificationList, GEOFENCE_TASK);
   };
 
   return (

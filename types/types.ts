@@ -16,7 +16,8 @@ export interface NotificationRegion {
 }
 
 export interface NotificationListItem {
-    type:"location"|"time",
+    type:"location"|"clock";
+    isActive: boolean; // 通知の有効/無効
     title: string; // 通知タイトル
     id: string; // UUID
     notificationID: string; // UUID

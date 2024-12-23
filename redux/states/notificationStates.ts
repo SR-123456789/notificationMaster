@@ -1,11 +1,7 @@
+import { NotificationListItem } from "@/types/types";
+
 // Notificationの状態を管理する型
-interface Notification {
-    id: string;
-    title: string;
-    message: string;
-    timestamp: Date;
-    isRead: boolean;
-  }
+interface Notification extends NotificationListItem {}
   
   interface NotificationState {
     notifications: Notification[];

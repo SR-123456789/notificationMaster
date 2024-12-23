@@ -1,3 +1,4 @@
+import { NotificationListItem } from '@/types/types';
 import * as Location from 'expo-location';
 
 export interface GeofenceRegion {
@@ -36,7 +37,7 @@ export const requestLocationPermission = async (): Promise<boolean> => {
 
 
 export const setupGeofences = async (
-  regions: GeofenceRegion[],
+  regions: NotificationListItem[],
   taskName: string
 ): Promise<void> => {
   console.log("sss")
