@@ -47,6 +47,7 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.5",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-get-random-values": "^1.11.0",
     "react-native-header-arupaka-r": "^1.4.0",
     "react-native-maps": "1.18.0",
     "react-native-reanimated": "~3.16.1",
@@ -54,8 +55,11 @@
     "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
+    "react-redux": "^9.2.0",
+    "redux": "^5.0.1",
     "strip-ansi": "^7.1.0",
-    "tailwind-rn": "^4.2.0"
+    "tailwind-rn": "^4.2.0",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

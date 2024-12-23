@@ -13,8 +13,13 @@ import AddNotificationSlectBottom from "../AddNotification/AddNotificationSelect
 import AddNotificationInputWebPage from "../AddNotification/AddNotificationInputWebPage";
 import AddNotificationSelectLocation from "../AddNotification/AddNotficationSelecrLocation";
 import AddNotificationInputTime from "../AddNotification/AddNotficationInputTime";
-import { setupGeofences } from "../../services/locationService";
-import { NotificationRegion } from "../../types/types";
+import { reverseGeocodeWithNominatim, setupGeofences } from "../../services/locationService";
+import { NotificationListItem, NotificationRegion } from "../../types/types";
+import { useDispatch, useSelector } from "react-redux";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import { addNotification } from "@/redux/actions/notificationActions";
+import { RootState } from "@/redux/store";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -27,6 +32,8 @@ const AddNotificationDialog = ({
   isOpen,
   onClose,
 }: AddNotificationDialogProps) => {
+  const dispatch = useDispatch();
+  const notificationList =useSelector((state: RootState) => state.notifications.notifications);
   useEffect(() => {
     if (isOpen) openModal();
     if (!isOpen) closeModal;
@@ -40,7 +47,7 @@ const AddNotificationDialog = ({
   >("");
   const [notificationURL, setNotificationURL] = useState("");
   const [notificationTime, setNotificationTime] = useState("");
-  const [notificationLocation, setNotificationLocation] = useState<No | null>(
+  const [notificationLocation, setNotificationLocation] = useState<any | null>(
     null
   );
 
@@ -80,28 +87,47 @@ const AddNotificationDialog = ({
     },
   ]);
 
-  const addGeofenceRegion = () => {
-    // sendNotification("通知タイトル", "これはローカル通知の例です");
+  const addGeofenceRegion = async() => {
+
+    const notification:NotificationListItem = {
+      type:"location",
+      title: await reverseGeocodeWithNominatim(notificationLocation.latitude, notificationLocation.longitude),
+      id: uuidv4(),
+      notificationID: uuidv4(),
+      url: notificationURL,
+      time: notificationTime,
+      latitude: notificationLocation.latitude,
+      longitude: notificationLocation.longitude,
+      radius: notificationLocation.radius,
+      notifyOnEnter: notificationLocation.notifyOnEnter,
+      notifyOnExit: notificationLocation.notifyOnExit,
+    };
+
+    const beforeNotificationList = notificationList;
+    dispatch(addNotification(notification))
+    const NewNotificationList=beforeNotificationList.push(notification);
+    console.log("now",NewNotificationList);
+
     // if (!notificationLocation) return;
     // if (!geofences) {
     //   Alert.alert('ジオフェンスを設定してください');
     //   return;
     // }
 
-    setupGeofences(
-      [
-        {
-          identifier: "Tokyo Station",
-          latitude: notificationLocation.latitude,
-          longitude: notificationLocation.longitude,
-          radius: notificationLocation.radius,
-          notifyOnEnter: notificationLocation.notifyOnEnter,
-          notifyOnExit: notificationLocation.notifyOnExit,
-          url: notificationURL,
-        },
-      ],
-      GEOFENCE_TASK
-    );
+    // setupGeofences(
+    //   [
+    //     {
+    //       identifier: "Tokyo Station",
+    //       latitude: notificationLocation.latitude,
+    //       longitude: notificationLocation.longitude,
+    //       radius: notificationLocation.radius,
+    //       notifyOnEnter: notificationLocation.notifyOnEnter,
+    //       notifyOnExit: notificationLocation.notifyOnExit,
+    //       url: notificationURL,
+    //     },
+    //   ],
+    //   GEOFENCE_TASK
+    // );
   };
 
   return (

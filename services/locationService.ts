@@ -55,3 +55,22 @@ export const setupGeofences = async (
     console.error('Geofencesの設定に失敗しました:', error);
   }
 };
+
+export const reverseGeocodeWithNominatim = async (latitude: number, longitude: number): Promise<string> => {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data && data.address) {
+      const { road, city, state, country } = data.address;
+      // 住所をフォーマット
+      return `${state || ''}${city || ''}${road || ''}`;
+    }
+    return '住所から通知';
+  } catch (error) {
+    console.error('逆ジオコーディングエラー:', error);
+    return '住所から通知';
+  }
+};

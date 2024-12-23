@@ -82,6 +82,8 @@ const AddNotificationSelectLocation = ({ onLocationSelect }: AddNotificationSele
         latitude: newRegion.latitude,
         longitude: newRegion.longitude,
         radius,
+        notifyOnExit: false,
+        notifyOnEnter: true,
       });
     },
     [markerY]
