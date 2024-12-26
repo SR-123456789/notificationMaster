@@ -14,6 +14,7 @@ import {
   cancelScheduleNotification,
   setupNotficationSchedule,
 } from "@/services/notificationService";
+import { setDeleteMode } from "@/redux/actions/commonActions";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -48,6 +49,7 @@ const NotificationListContainer = () => {
   };
 
   const onChangeNotificationStatus = async (id: string, v: boolean) => {
+    dispatch(setDeleteMode(false))
     //ToDo 通知へ反映させる。
     const result = notifications.find((item) => item.id === id);
 

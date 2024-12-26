@@ -9,8 +9,13 @@ interface AddNotificationInputTimeProps {
 const AddNotificationInputTime = ({
   setTime,
 }: AddNotificationInputTimeProps) => {
-  const [selectedHour, setSelectedHour] = useState("00");
-  const [selectedMinute, setSelectedMinute] = useState("00");
+  const now = new Date();
+  const currentHour = now.getHours().toString().padStart(2, "0"); // "00" - "23"
+  const currentMinute = now.getMinutes().toString().padStart(2, "0"); // "00" - "59"
+
+
+  const [selectedHour, setSelectedHour] = useState(currentHour);
+  const [selectedMinute, setSelectedMinute] = useState(currentMinute);
 
   useEffect(() => {
     setTime({ hour: Number(selectedHour), minute: Number(selectedMinute) });

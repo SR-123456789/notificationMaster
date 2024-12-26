@@ -1,16 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { ArupakaHeaderView } from "react-native-header-arupaka-r";
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/common/Header";
 import AddNotificationDialog from "@/components/common/AddNotificationDialog";
 import NotificationListContainer from "@/components/home/NotificationListContainer";
+import { useDispatch } from "react-redux";
+import { setDeleteMode } from "@/redux/actions/commonActions";
 
 const GEOFENCE_TASK = "geofenceTask";
 
 const Index = () => {
   const [visibleAddNotificationDialog, setVisibleAddNotificationDialog] =
     useState<boolean>(false);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+    dispatch(setDeleteMode(false))
+    }, [visibleAddNotificationDialog]);
 
   return (
     <>

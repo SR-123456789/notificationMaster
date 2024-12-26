@@ -1,5 +1,6 @@
 import { NotificationListItem } from '@/types/types';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface GeofenceRegion {
   identifier: string;
@@ -35,6 +36,30 @@ export const requestLocationPermission = async (): Promise<boolean> => {
 
 };
 
+const updateNotificationIDs = (json: any): any => {
+  // JSONが配列の場合
+  if (Array.isArray(json)) {
+    return json.map((item) => updateNotificationIDs(item));
+  }
+
+  // JSONがオブジェクトの場合
+  if (typeof json === "object" && json !== null) {
+    const updatedObject: any = {};
+    for (const key in json) {
+      if (key === "notificationID") {
+        updatedObject["identifier"] = json[key]; // キー名を置き換え
+      } else {
+        updatedObject[key] = updateNotificationIDs(json[key]); // 再帰的に適用
+      }
+    }
+    return updatedObject;
+  }
+
+  // 配列やオブジェクトでない場合（文字列、数値など）
+  return json;
+};
+
+
 
 export const setupGeofences = async (
   regions: NotificationListItem[],
@@ -50,7 +75,8 @@ export const setupGeofences = async (
   if (!hasPermission) return;
 
   try {
-    await Location.startGeofencingAsync(taskName, regions);
+    await AsyncStorage.setItem('@storage_Key', JSON.stringify(regions));
+    await Location.startGeofencingAsync(taskName, updateNotificationIDs(regions));
     console.log('Geofencesが設定されました:', regions);
   } catch (error) {
     console.error('Geofencesの設定に失敗しました:', error);
@@ -73,5 +99,31 @@ export const reverseGeocodeWithNominatim = async (latitude: number, longitude: n
   } catch (error) {
     console.error('逆ジオコーディングエラー:', error);
     return '住所から通知';
+  }
+};
+
+export const getApproximateLocation = async (): Promise<null | { latitude: number; longitude: number }> => {
+  try {
+    // 権限の確認
+    const { status } = await Location.getForegroundPermissionsAsync();
+    console.log(status)
+
+    // 権限がない場合
+    if (status !== 'granted') {
+      return null;
+    }
+
+    // 権限がある場合、大まかな位置情報を取得
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Low, // 大まかな場所を取得
+    });
+
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+  } catch (error) {
+    console.error('位置情報の取得に失敗しました:', error);
+    return null // エラー時も "no_permission" を返す
   }
 };

@@ -21,7 +21,7 @@ const NotificationListItem = ({
 
   return (
     <TouchableOpacity style={[styles.container]}>
-      {isDeleteMode &&<TouchableOpacity onPress={()=>deleteNotification(notification.id)}><Entypo name="circle-with-minus" size={24} color="red" /></TouchableOpacity>}
+      {isDeleteMode &&<TouchableOpacity style={{marginRight:20}} onPress={()=>deleteNotification(notification.id)}><Entypo name="circle-with-minus" size={24} color="red" /></TouchableOpacity>}
       <View style={{ flex: 1, justifyContent: "center", borderRadius: 5 }}>
         <Text style={styles.title}>{notification.title}</Text>
         <Text style={{fontSize:12}}>{notification.NotificationTitle}</Text>

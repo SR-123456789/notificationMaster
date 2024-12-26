@@ -161,7 +161,7 @@ const AddNotificationDialog = ({
 
     dispatch(addNotificationAction(notification));
     beforeNotificationList.push(notification);
-    setupGeofences(beforeNotificationList, GEOFENCE_TASK);
+    await setupGeofences(beforeNotificationList, GEOFENCE_TASK);
     closeModal();
   };
 

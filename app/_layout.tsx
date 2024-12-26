@@ -17,7 +17,8 @@ import { TailwindProvider } from "tailwind-rn";
 import { requestNotificationPermission } from "@/services/notificationService";
 import { defineGeofenceTask } from "@/services/taskManager";
 import { Provider } from "react-redux";
-import store from "@/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from "@/redux/store";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -72,17 +73,19 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <TailwindProvider utilities={utilities}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </TailwindProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <TailwindProvider utilities={utilities}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </TailwindProvider>
+      </PersistGate>
     </Provider>
   );
 }
