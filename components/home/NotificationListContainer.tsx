@@ -3,10 +3,17 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import NotificationList from "./NotificationList";
-import { changeNotificationID, changeNotificationStatus } from "@/redux/actions/notificationActions";
+import {
+  changeNotificationID,
+  changeNotificationStatus,
+  deleteNotification as deleteNotificationAction,
+} from "@/redux/actions/notificationActions";
 import { setupGeofences } from "@/services/locationService";
 import { NotificationListItem } from "@/types/types";
-import { cancelScheduleNotification, setupNotficationSchedule } from "@/services/notificationService";
+import {
+  cancelScheduleNotification,
+  setupNotficationSchedule,
+} from "@/services/notificationService";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -16,27 +23,31 @@ const NotificationListContainer = () => {
   const notifications = useSelector(
     (state: RootState) => state.notifications.notifications
   );
+  const isDeleteMode = useSelector(
+    (state: RootState) => state.common.isDeleteMode
+  );
 
-  const deleteNotification = async(id: string) => {
+  const deleteNotification = async (id: string) => {
     const result = notifications.find((item) => item.id === id);
 
-    if(result?.isActive){
-      if(result.type === "clock"){
+    if (result?.isActive) {
+      if (result.type === "clock") {
         cancelScheduleNotification(result.notificationID);
       }
-      if(result.type === "location"){
+      if (result.type === "location") {
         const allNotificationList = notifications.filter(
           (item) => item.type === "location" && item.isActive === true
         );
-        const deletedNotificationList = allNotificationList.filter(item => item.id !== id);
+        const deletedNotificationList = allNotificationList.filter(
+          (item) => item.id !== id
+        );
         setupGeofences(deletedNotificationList, GEOFENCE_TASK);
       }
     }
-    
+    dispatch(deleteNotificationAction(id));
+  };
 
-  }
-
-  const onChangeNotificationStatus = async(id: string, v: boolean) => {
+  const onChangeNotificationStatus = async (id: string, v: boolean) => {
     //ToDo 通知へ反映させる。
     const result = notifications.find((item) => item.id === id);
 
@@ -45,8 +56,9 @@ const NotificationListContainer = () => {
     if (result.type === "clock") {
       if (v) {
         //ToDo 通知を設定する
-        result.notificationID = await setupNotficationSchedule(result)||"error";
-        changeNotificationID(result.id,result.notificationID);
+        result.notificationID =
+          (await setupNotficationSchedule(result)) || "error";
+        changeNotificationID(result.id, result.notificationID);
       } else {
         //ToDo 通知を解除する
         cancelScheduleNotification(result.notificationID);
@@ -65,7 +77,9 @@ const NotificationListContainer = () => {
     dispatch(changeNotificationStatus(id, v));
   };
 
-  const activeLocationNotification = (thisNotification:NotificationListItem) => {
+  const activeLocationNotification = (
+    thisNotification: NotificationListItem
+  ) => {
     const allNotificationList = notifications.filter(
       (item) => item.type === "location" && item.isActive === true
     );
@@ -78,17 +92,22 @@ const NotificationListContainer = () => {
     setupGeofences(allNotificationList, GEOFENCE_TASK);
   };
 
-  const disableLocationNotification = (thisNotification:NotificationListItem) => {
+  const disableLocationNotification = (
+    thisNotification: NotificationListItem
+  ) => {
     const allNotificationList = notifications.filter(
       (item) => item.type === "location" && item.isActive === true
     );
-    const deletedNotificationList = allNotificationList.filter(item => item.id !== thisNotification.id);
+    const deletedNotificationList = allNotificationList.filter(
+      (item) => item.id !== thisNotification.id
+    );
     setupGeofences(deletedNotificationList, GEOFENCE_TASK);
   };
 
-  
   return (
     <NotificationList
+    deleteNotification={(id) => deleteNotification(id)}
+      isDeleteMode={isDeleteMode}
       notifications={notifications}
       changeNotificationStatus={(id, v) => onChangeNotificationStatus(id, v)}
     />
@@ -96,4 +115,3 @@ const NotificationListContainer = () => {
 };
 
 export default NotificationListContainer;
-

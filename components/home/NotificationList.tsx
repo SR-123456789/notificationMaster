@@ -1,21 +1,34 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { NotificationListItem as NotificationListItemType } from '@/types/types';
-import NotificationListItem from './NotificationListItem';
+import { View, Text } from "react-native";
+import React from "react";
+import { NotificationListItem as NotificationListItemType } from "@/types/types";
+import NotificationListItem from "./NotificationListItem";
 
 interface NotificationListProps {
-    notifications: NotificationListItemType[];
-    changeNotificationStatus: (id: string, value: boolean) => void;
-    }
-
-const NotificationList = ({notifications,changeNotificationStatus}:NotificationListProps) => {
-  return (
-    <View>
-        {notifications.map((notification,index:number) => (
-          <NotificationListItem key={index} notification={notification} changeNotificationStatus={changeNotificationStatus}/>
-        ))}
-    </View>
-  )
+  deleteNotification: (id: string) => void;
+  isDeleteMode: boolean;
+  notifications: NotificationListItemType[];
+  changeNotificationStatus: (id: string, value: boolean) => void;
 }
 
-export default NotificationList
+const NotificationList = ({
+  deleteNotification,
+  notifications,
+  changeNotificationStatus,
+  isDeleteMode,
+}: NotificationListProps) => {
+  return (
+    <View>
+      {notifications.map((notification, index: number) => (
+        <NotificationListItem
+          deleteNotification={deleteNotification}
+          isDeleteMode={isDeleteMode}
+          key={index}
+          notification={notification}
+          changeNotificationStatus={changeNotificationStatus}
+        />
+      ))}
+    </View>
+  );
+};
+
+export default NotificationList;

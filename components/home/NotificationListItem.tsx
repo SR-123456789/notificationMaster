@@ -1,14 +1,18 @@
 import { View, Text, Switch, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { NotificationListItem as NotificationListItemType } from "@/types/types";
-
+import Entypo from '@expo/vector-icons/Entypo';
 interface NotificationListItemProps {
+  deleteNotification: (id: string) => void;
+  isDeleteMode: boolean;
   notification: NotificationListItemType;
   changeNotificationStatus: (id: string, value: boolean) => void;
 }
 
 const NotificationListItem = ({
+  deleteNotification,
   notification,
+  isDeleteMode,
   changeNotificationStatus,
 }: NotificationListItemProps) => {
   const toggleSwitch = () => {
@@ -17,6 +21,7 @@ const NotificationListItem = ({
 
   return (
     <TouchableOpacity style={[styles.container]}>
+      {isDeleteMode &&<TouchableOpacity onPress={()=>deleteNotification(notification.id)}><Entypo name="circle-with-minus" size={24} color="red" /></TouchableOpacity>}
       <View style={{ flex: 1, justifyContent: "center", borderRadius: 5 }}>
         <Text style={styles.title}>{notification.title}</Text>
         <Text style={{fontSize:12}}>{notification.NotificationTitle}</Text>
