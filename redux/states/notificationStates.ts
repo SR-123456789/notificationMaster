@@ -1,10 +1,9 @@
 import { NotificationListItem } from "@/types/types";
 
 // Notificationの状態を管理する型
-interface Notification extends NotificationListItem {}
-  
+
   interface NotificationState {
-    notifications: Notification[];
+    notifications: NotificationListItem[];
   }
   
   const initialNotificationState: NotificationState = {
@@ -12,5 +11,5 @@ interface Notification extends NotificationListItem {}
   };
   
   export default initialNotificationState;
-  export type { Notification, NotificationState };
+  export type { NotificationListItem, NotificationState };
   

@@ -1,10 +1,10 @@
 import { NotificationListItem } from '@/types/types';
-import { Notification } from '../states/notificationStates';
 
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const MARK_AS_READ = 'MARK_AS_READ';
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 export const CHANGE_NOTIFICATION_STATUS = 'CHANGE_NOTIFICATION_STATUS';
+export const CHANGE_NOTIFICATION_ID='CHANGE_NOTIFICATION_ID'
 
 export const addNotification = (notification: NotificationListItem) => ({
   type: ADD_NOTIFICATION,
@@ -21,7 +21,15 @@ export const markAsRead = (id: string) => ({
   payload: id,
 });
 
-export const removeNotification = (id: string) => ({
-  type: REMOVE_NOTIFICATION,
-  payload: id,
-});
+export const changeNotificationID=(id:string,value:string)=>{
+  return {
+    type:CHANGE_NOTIFICATION_ID,
+    payload:{id,value}
+  }
+}
+export const deleteNotification=(id:string)=>{
+  return {
+    type:REMOVE_NOTIFICATION,
+    payload:id
+  }
+}

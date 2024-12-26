@@ -1,4 +1,6 @@
+import { NotificationListItem } from '@/types/types';
 import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
 export const requestNotificationPermission = async (): Promise<void> => {
   const { status } = await Notifications.getPermissionsAsync();
@@ -14,15 +16,14 @@ export const sendNotification = async (
   data: { [key: string]: any } = {}
 ): Promise<void> => {
   try {
-    console.log('通知を送信します');
     // const { granted } = await Notifications.getPermissionsAsync();
     // if (granted) { 
     //   console.log(granted)
     //   return }   
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "通知タイトル",
-        body: "これはローカル通知の例です",
+        title: title,
+        body: body,
         sound: true,
       },
       trigger: null
@@ -40,5 +41,40 @@ export const sendNotification = async (
     console.log('通知を送信しました');
   } catch (error) {
     console.error('通知の送信に失敗しました:', error);
+  }
+};
+
+
+export const setupNotficationSchedule = async (NotificationListItem: NotificationListItem) => {
+  try {
+    if (NotificationListItem.type !== "clock") return
+    console.log(NotificationListItem);
+    // await Notifications.cancelAllScheduledNotificationsAsync();
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: NotificationListItem.title,
+        body: NotificationListItem.sentence,
+        sound: true,
+        data: {
+          url: NotificationListItem.url, // URLをデータとして渡す
+        },
+      },
+      trigger: {
+        type: SchedulableTriggerInputTypes.DAILY,
+        hour: NotificationListItem.time.hour,
+        minute: NotificationListItem.time.minute,
+      },
+    });
+    return notificationId;
+  } catch (e) {
+    console.log(e)
+  }
+}
+export const cancelScheduleNotification = async (notificationId: string) => {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    console.log(`Notification with ID ${notificationId} canceled.`);
+  } catch (error) {
+    console.error("Failed to cancel notification:", error);
   }
 };

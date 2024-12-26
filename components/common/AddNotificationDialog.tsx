@@ -17,12 +17,14 @@ import {
   reverseGeocodeWithNominatim,
   setupGeofences,
 } from "../../services/locationService";
-import { NotificationListItem, NotificationRegion } from "../../types/types";
+import { NotificationListItem, NotificationTime } from "../../types/types";
 import { useDispatch, useSelector } from "react-redux";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { addNotification } from "@/redux/actions/notificationActions";
+import { addNotification as addNotificationAction } from "@/redux/actions/notificationActions";
 import { RootState } from "@/redux/store";
+import { setupNotficationSchedule } from "@/services/notificationService";
+import NotificationCommonSetting from "../NotificationDialog/NotificationCommonSetting";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -51,10 +53,13 @@ const AddNotificationDialog = ({
     "" | "clock" | "location"
   >("");
   const [notificationURL, setNotificationURL] = useState("");
-  const [notificationTime, setNotificationTime] = useState("");
+  const [notificationTime, setNotificationTime] =
+    useState<NotificationTime | null>(null);
   const [notificationLocation, setNotificationLocation] = useState<any | null>(
     null
   );
+  const [notificationTitle, setNotificationTitle] = useState("未設定");
+  const [notificationSentence, setNotificationSentence] = useState("");
 
   const openModal = () => {
     setVisible(true);
@@ -80,6 +85,49 @@ const AddNotificationDialog = ({
     setShowNotificationMethod(true);
   };
 
+  const addNotification = () => {
+    if (selectedMethod === "clock") {
+      addClockNotification();
+      return;
+    }
+    if (selectedMethod === "location") {
+      addGeofenceRegion();
+      return;
+    }
+  };
+
+  const addClockNotification = async () => {
+    try {
+      if (!notificationTime) {
+        Alert.alert("時刻を設定してください");
+        return;
+      }
+      const notification: NotificationListItem = {
+        type: "clock",
+        isActive: true,
+        title: `${notificationTime.hour.toString().length===2?notificationTime.hour:"0"+notificationTime.hour} : ${notificationTime.minute.toString().length===2?notificationTime.minute:"0"+notificationTime.minute}`,
+        id: uuidv4(),
+        notificationID: uuidv4(),
+        url: notificationURL,
+        time: notificationTime,
+        sentence: notificationSentence,
+        NotificationTitle: notificationTitle,
+      };
+      const scheduledNotificationID = await setupNotficationSchedule(
+        notification
+      );
+      if (scheduledNotificationID) {
+        // notificationID を更新
+        notification.notificationID = scheduledNotificationID;
+      }
+
+      dispatch(addNotificationAction(notification));
+      closeModal();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const addGeofenceRegion = async () => {
     // Todo: 記入されていない情報の追加記載
 
@@ -102,27 +150,61 @@ const AddNotificationDialog = ({
       id: uuidv4(),
       notificationID: uuidv4(),
       url: notificationURL,
-      time: notificationTime,
       latitude: notificationLocation.latitude,
       longitude: notificationLocation.longitude,
       radius: notificationLocation.radius,
       notifyOnEnter: notificationLocation.notifyOnEnter,
       notifyOnExit: notificationLocation.notifyOnExit,
+      sentence: notificationSentence,
+      NotificationTitle: notificationTitle,
     };
 
-    dispatch(addNotification(notification));
+    dispatch(addNotificationAction(notification));
     beforeNotificationList.push(notification);
-    console.log("now", beforeNotificationList);
-
-    // if (!notificationLocation) return;
-    // if (!geofences) {
-    //   Alert.alert('ジオフェンスを設定してください');
-    //   return;
-    // }
-
     setupGeofences(beforeNotificationList, GEOFENCE_TASK);
+    closeModal();
   };
 
+  async function fetchPageTitle(url: string) {
+    try {
+      const response = await fetch(url);
+      const html = await response.text();
+
+      // HTML を解析してタイトルを取得
+      const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        return titleMatch[1];
+      } else {
+        throw new Error("タイトルが見つかりませんでした");
+      }
+    } catch (error) {
+      console.error("タイトルの取得に失敗しました:", error);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    if (notificationURL) {
+      fetchPageTitle(notificationURL).then((title) => {
+        if (title) {
+          // Alert.alert(title);
+          setNotificationTitle(title);
+        }
+      });
+    }
+  }, [notificationURL]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setNotificationTitle("未設定");
+      setNotificationSentence("");
+      setNotificationLocation(null);
+      setNotificationTime(null);
+      setNotificationURL("");
+      setSelectedMethod("");
+      setShowNotificationMethod(false);
+    }
+  }, [isOpen]);
   return (
     <Modal
       transparent={true}
@@ -170,7 +252,7 @@ const AddNotificationDialog = ({
                 color: "#333",
               }}
             >
-              WEB通知の追加
+              通知の追加
             </Text>
 
             {/* 保存ボタン */}
@@ -179,7 +261,7 @@ const AddNotificationDialog = ({
                 padding: 1,
                 borderRadius: 4,
               }}
-              onPress={addGeofenceRegion}
+              onPress={addNotification}
             >
               <Text
                 style={{ color: "#059669", fontWeight: "bold", fontSize: 16 }}
@@ -190,11 +272,19 @@ const AddNotificationDialog = ({
           </View>
           <ScrollView style={{ paddingHorizontal: 20 }}>
             <AddNotificationInputWebPage onInputUrl={onInputUrl} />
+            <NotificationCommonSetting
+              notificationSentence={notificationSentence}
+              setNotificationSentence={setNotificationSentence}
+              notificationTitle={notificationTitle}
+              setNotificationTitle={setNotificationTitle}
+            />
             <AddNotificationSlectBottom
               isShow={showNotificationMethod}
               onSelectMode={setSelectedMethod}
             />
-            {selectedMethod === "clock" && <AddNotificationInputTime />}
+            {selectedMethod === "clock" && (
+              <AddNotificationInputTime setTime={setNotificationTime} />
+            )}
             {selectedMethod === "location" && (
               <AddNotificationSelectLocation
                 onLocationSelect={setNotificationLocation}
@@ -202,7 +292,7 @@ const AddNotificationDialog = ({
             )}
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={addGeofenceRegion}
+              onPress={addNotification}
             >
               <Text style={styles.closeButtonText}>登録</Text>
             </TouchableOpacity>

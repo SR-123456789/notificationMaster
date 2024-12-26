@@ -1,6 +1,7 @@
 import * as TaskManager from 'expo-task-manager';
 import { sendNotification } from './notificationService';
 import * as Location from 'expo-location';
+import { NotificationListItem } from '@/types/types';
 
 export const defineGeofenceTask = (taskName: string): void => {
   TaskManager.defineTask(taskName, async ({ data, error }) => {
@@ -13,13 +14,13 @@ export const defineGeofenceTask = (taskName: string): void => {
     if (data) {
       const { eventType, region } = data as {
         eventType: Location.GeofencingEventType;
-        region: { identifier: string; url: string }; // URLを含む
+        region: NotificationListItem; // URLを含む
       };
 
       if (eventType === Location.GeofencingEventType.Enter) {
         await sendNotification(
-          'ジオフェンス通知',
-          `${region.identifier}に入りました！`,
+          region.NotificationTitle!=="未設定"?region.NotificationTitle:(region.title||region.NotificationTitle),
+          region.sentence||`${region.title}に入りました！`,
           { url: region.url } // URLを通知のデータに追加
         );
       }

@@ -15,10 +15,13 @@ const AddNotificationInputWebPage = ({ onInputUrl }) => {
   const [isValidUrl, setIsValidUrl] = useState(false);
 
   const validateUrl = (input) => {
-    const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-./?%&=]*)?$/;
-    return urlPattern.test(input);
+    try {
+      new URL(input);
+      return true;
+    } catch {
+      return false;
+    }
   };
-
   const handleInputChange = (text) => {
     setUrl(text);
     const isValid = validateUrl(text);

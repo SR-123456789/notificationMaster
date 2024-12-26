@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import utilities from "../tailwind.json";
 import * as Notifications from "expo-notifications";
+import * as Linking from "expo-linking";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { TailwindProvider } from "tailwind-rn";
 import { requestNotificationPermission } from "@/services/notificationService";
@@ -47,6 +48,23 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  useEffect(() => {
+    // 通知タップ時のリスナー設定
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const url = response.notification.request.content.data.url as string;
+        if (url) {
+          Linking.openURL(url); // URLを開く
+        }
+      }
+    );
+
+    // クリーンアップ: リスナーを解除
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   if (!loaded) {
     return null;

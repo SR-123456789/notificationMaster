@@ -19,6 +19,7 @@ const NotificationListItem = ({
     <TouchableOpacity style={[styles.container]}>
       <View style={{ flex: 1, justifyContent: "center", borderRadius: 5 }}>
         <Text style={styles.title}>{notification.title}</Text>
+        <Text style={{fontSize:12}}>{notification.NotificationTitle}</Text>
       </View>
       <Switch onValueChange={toggleSwitch} value={notification.isActive} />
     </TouchableOpacity>
@@ -29,15 +30,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent:"center",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 2,
     marginVertical: 5,
     borderRadius: 5,
   },
   title: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 25,
   },
   active: {
     backgroundColor: "#d4edda",

@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import initialNotificationState, { NotificationState } from '../states/notificationStates';
-import { ADD_NOTIFICATION, CHANGE_NOTIFICATION_STATUS, MARK_AS_READ, REMOVE_NOTIFICATION } from '../actions/notificationActions';
+import { ADD_NOTIFICATION, CHANGE_NOTIFICATION_ID, CHANGE_NOTIFICATION_STATUS, MARK_AS_READ, REMOVE_NOTIFICATION } from '../actions/notificationActions';
 
 interface PayloadAction extends Action {
   payload?: any;
@@ -34,6 +34,13 @@ const notificationReducer = (
       return {
         ...state,
         notifications: state.notifications.filter((notification) => notification.id !== action.payload),
+      };
+    case CHANGE_NOTIFICATION_ID:
+      return {
+        ...state,
+        notifications: state.notifications.map((notification) =>
+          notification.id === action.payload ? { ...notification, notificationID: action.payload.value } : notification
+        ),
       };
     default:
       return state;
