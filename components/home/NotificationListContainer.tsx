@@ -106,7 +106,7 @@ const NotificationListContainer = () => {
 
   return (
     <NotificationList
-    deleteNotification={(id) => deleteNotification(id)}
+      deleteNotification={(id) => deleteNotification(id)}
       isDeleteMode={isDeleteMode}
       notifications={notifications}
       changeNotificationStatus={(id, v) => onChangeNotificationStatus(id, v)}

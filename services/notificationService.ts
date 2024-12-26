@@ -25,6 +25,9 @@ export const sendNotification = async (
         title: title,
         body: body,
         sound: true,
+        data: {
+          url: data.url, // URLをデータとして渡す
+        },
       },
       trigger: null
     });
@@ -52,7 +55,7 @@ export const setupNotficationSchedule = async (NotificationListItem: Notificatio
     // await Notifications.cancelAllScheduledNotificationsAsync();
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
-        title: NotificationListItem.title,
+        title: NotificationListItem.NotificationTitle,
         body: NotificationListItem.sentence,
         sound: true,
         data: {
