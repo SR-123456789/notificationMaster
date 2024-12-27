@@ -69,12 +69,15 @@ const NotificationListContainer = () => {
     if (result.type === "location") {
       if (v) {
         //ToDo 通知を設定する
-        activeLocationNotification(result);
+        const isCancel=activeLocationNotification(result);
+        if(isCancel) return
       } else {
         //ToDo 通知を解除する
         disableLocationNotification(result);
       }
     }
+
+
 
     dispatch(changeNotificationStatus(id, v));
   };
@@ -88,10 +91,11 @@ const NotificationListContainer = () => {
 
     if (allNotificationList.length >= 20) {
       Alert.alert("位置通知の登録は20個までです");
-      return;
+      return true;
     }
     allNotificationList.push(thisNotification);
     setupGeofences(allNotificationList, GEOFENCE_TASK);
+    return false;
   };
 
   const disableLocationNotification = (
