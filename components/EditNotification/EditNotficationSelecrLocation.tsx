@@ -45,6 +45,12 @@ const EditNotificationSelectLocation = ({
       console.log(correctRegion);
       if (correctRegion) {
         setRegion((prev) => ({ ...prev, ...correctRegion }));
+        onLocationSelect({
+          notifyOnExit: false,
+          notifyOnEnter: true,
+          radius: 200,
+          ...correctRegion,
+        });
       }
     };
     fetchApproximateLocation();
@@ -76,6 +82,13 @@ const EditNotificationSelectLocation = ({
           latitude: parseFloat(location.lat),
           longitude: parseFloat(location.lon),
         }));
+        onLocationSelect({
+          latitude: parseFloat(location.lat),
+          longitude: parseFloat(location.lon),
+          radius,
+          notifyOnExit: false,
+          notifyOnEnter: true,
+        });
       } else {
         alert("場所が見つかりませんでした");
       }

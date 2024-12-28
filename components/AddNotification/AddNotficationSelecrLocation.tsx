@@ -36,7 +36,20 @@ const AddNotificationSelectLocation = ({
       console.log(correctRegion);
       if (correctRegion) {
         setRegion((prev) => ({ ...prev, ...correctRegion }));
+        onLocationSelect({
+          notifyOnExit: false,
+          notifyOnEnter: true,
+          radius: 200,
+          ...correctRegion,
+        });
       }
+     
+      console.log({
+        notifyOnExit: false,
+        notifyOnEnter: true,
+        radius: 200,
+        ...correctRegion,
+      })
     };
     fetchApproximateLocation();
   }, [setRegion]);
@@ -67,9 +80,17 @@ const AddNotificationSelectLocation = ({
           latitude: parseFloat(location.lat),
           longitude: parseFloat(location.lon),
         }));
+        onLocationSelect({
+          latitude: parseFloat(location.lat),
+          longitude: parseFloat(location.lon),
+          radius,
+          notifyOnExit: false,
+          notifyOnEnter: true,
+        });
       } else {
         alert("場所が見つかりませんでした");
       }
+      
     } catch (error: any) {
       alert("エラーが発生しました: " + error.message);
     }
