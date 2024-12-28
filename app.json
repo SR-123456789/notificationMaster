@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "hirakegoma",
+    "name": "通知マスター",
     "slug": "hirakegoma",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,10 +13,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.preparation.hirakegoma",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "位置情報を使用します。",
-        "NSLocationAlwaysUsageDescription": "バックグラウンドで位置情報を使用します。",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "位置情報を常に使用します。",
-        "UIBackgroundModes": ["location"]
+        "NSLocationWhenInUseUsageDescription": "特定の場所で通知を受信するために必要です。",
+        "NSLocationAlwaysUsageDescription": "特定の場所で通知を受信するために必要です。",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "特定の場所で通知を受信するために必要です。",
+        "UIBackgroundModes": ["location"],
+        "NSUserTrackingUsageDescription": "通知を送信するために必要です。"
       }
     },
     "android": {
@@ -41,10 +42,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-main.png",
+          "image": "./assets/images/main-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#1A2436"
         }
       ]
     ],

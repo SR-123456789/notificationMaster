@@ -1,6 +1,7 @@
 import { NotificationListItem } from '@/types/types';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 export interface GeofenceRegion {
   identifier: string;
@@ -15,15 +16,20 @@ export interface GeofenceRegion {
 export const requestLocationPermission = async (): Promise<boolean> => {
   try {
     const foregroundResponse = await Location.requestForegroundPermissionsAsync();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
     if (foregroundResponse.status !== 'granted') {
-      alert('フォアグラウンドでの位置情報の使用が許可されていません');
+      Alert.alert('フォアグラウンドでの位置情報の使用が許可されていません');
       return false;
     }
-
     // バックグラウンドの権限をリクエスト
     const backgroundResponse = await Location.requestBackgroundPermissionsAsync();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    console.log('Background Permissions:', backgroundResponse.status);
+
     if (backgroundResponse.status !== 'granted') {
-      alert('バックグラウンドでの位置情報の使用が許可されていません');
+      Alert.alert('バックグラウンドでの位置情報の使用が許可されていません');
       return false;
     }
 

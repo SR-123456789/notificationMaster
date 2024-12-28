@@ -105,7 +105,15 @@ const AddNotificationDialog = ({
       const notification: NotificationListItem = {
         type: "clock",
         isActive: true,
-        title: `${notificationTime.hour.toString().length===2?notificationTime.hour:"0"+notificationTime.hour} : ${notificationTime.minute.toString().length===2?notificationTime.minute:"0"+notificationTime.minute}`,
+        title: `${
+          notificationTime.hour.toString().length === 2
+            ? notificationTime.hour
+            : "0" + notificationTime.hour
+        } : ${
+          notificationTime.minute.toString().length === 2
+            ? notificationTime.minute
+            : "0" + notificationTime.minute
+        }`,
         id: uuidv4(),
         notificationID: uuidv4(),
         url: notificationURL,
@@ -129,40 +137,45 @@ const AddNotificationDialog = ({
   };
 
   const addGeofenceRegion = async () => {
-    // Todo: 記入されていない情報の追加記載
+    try {
+      // Todo: 記入されていない情報の追加記載
 
-    const beforeNotificationList = notificationList.filter(
-      (item) => item.type === "location" && item.isActive === true
-    );
+      const beforeNotificationList = notificationList.filter(
+        (item) => item.type === "location" && item.isActive === true
+      );
 
-    if (beforeNotificationList.length >= 20) {
-      Alert.alert("位置通知の登録は20個までです");
-      return;
+      if (beforeNotificationList.length >= 20) {
+        Alert.alert("位置通知の登録は20個までです");
+        return;
+      }
+
+      const notification: NotificationListItem = {
+        type: "location",
+        isActive: true,
+        title: await reverseGeocodeWithNominatim(
+          notificationLocation.latitude,
+          notificationLocation.longitude
+        ),
+        id: uuidv4(),
+        notificationID: uuidv4(),
+        url: notificationURL,
+        latitude: notificationLocation.latitude,
+        longitude: notificationLocation.longitude,
+        radius: notificationLocation.radius,
+        notifyOnEnter: notificationLocation.notifyOnEnter,
+        notifyOnExit: notificationLocation.notifyOnExit,
+        sentence: notificationSentence,
+        NotificationTitle: notificationTitle,
+      };
+
+      dispatch(addNotificationAction(notification));
+      beforeNotificationList.push(notification);
+      console.log(164);
+      await setupGeofences(beforeNotificationList, GEOFENCE_TASK);
+      closeModal();
+    } catch (e) {
+      console.log(e);
     }
-
-    const notification: NotificationListItem = {
-      type: "location",
-      isActive: true,
-      title: await reverseGeocodeWithNominatim(
-        notificationLocation.latitude,
-        notificationLocation.longitude
-      ),
-      id: uuidv4(),
-      notificationID: uuidv4(),
-      url: notificationURL,
-      latitude: notificationLocation.latitude,
-      longitude: notificationLocation.longitude,
-      radius: notificationLocation.radius,
-      notifyOnEnter: notificationLocation.notifyOnEnter,
-      notifyOnExit: notificationLocation.notifyOnExit,
-      sentence: notificationSentence,
-      NotificationTitle: notificationTitle,
-    };
-
-    dispatch(addNotificationAction(notification));
-    beforeNotificationList.push(notification);
-    await setupGeofences(beforeNotificationList, GEOFENCE_TASK);
-    closeModal();
   };
 
   async function fetchPageTitle(url: string) {

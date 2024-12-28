@@ -42,14 +42,17 @@ const AddNotificationSelectLocation = ({
           radius: 200,
           ...correctRegion,
         });
+      } else {
+        onLocationSelect({
+          notifyOnExit: false,
+          notifyOnEnter: true,
+          radius: 200,
+          latitude: 35.6895, // 初期の中心座標（例: 東京）
+          longitude: 139.6917,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
       }
-     
-      console.log({
-        notifyOnExit: false,
-        notifyOnEnter: true,
-        radius: 200,
-        ...correctRegion,
-      })
     };
     fetchApproximateLocation();
   }, [setRegion]);
@@ -90,7 +93,6 @@ const AddNotificationSelectLocation = ({
       } else {
         alert("場所が見つかりませんでした");
       }
-      
     } catch (error: any) {
       alert("エラーが発生しました: " + error.message);
     }
@@ -144,8 +146,6 @@ const AddNotificationSelectLocation = ({
       radius: value,
     });
   };
-
-
 
   return (
     <View style={styles.container}>
