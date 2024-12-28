@@ -7,6 +7,7 @@ interface NotificationListItemProps {
   isDeleteMode: boolean;
   notification: NotificationListItemType;
   changeNotificationStatus: (id: string, value: boolean) => void;
+  onOpenEditNotificationDialog: (v: string) => void;
 }
 
 const NotificationListItem = ({
@@ -14,13 +15,14 @@ const NotificationListItem = ({
   notification,
   isDeleteMode,
   changeNotificationStatus,
+  onOpenEditNotificationDialog,
 }: NotificationListItemProps) => {
   const toggleSwitch = () => {
     changeNotificationStatus(notification.id, !notification.isActive);
   };
 
   return (
-    <TouchableOpacity style={[styles.container]}>
+    <TouchableOpacity style={[styles.container]} onPress={()=>onOpenEditNotificationDialog(notification.id)}>
       {isDeleteMode &&<TouchableOpacity style={{marginRight:20}} onPress={()=>deleteNotification(notification.id)}><Entypo name="circle-with-minus" size={24} color="red" /></TouchableOpacity>}
       <View style={{ flex: 1, justifyContent: "center", borderRadius: 5 }}>
         <Text style={styles.title}>{notification.title}</Text>

@@ -8,6 +8,7 @@ interface NotificationListProps {
   isDeleteMode: boolean;
   notifications: NotificationListItemType[];
   changeNotificationStatus: (id: string, value: boolean) => void;
+  onOpenEditNotificationDialog: (v: string) => void;
 }
 
 const NotificationList = ({
@@ -15,6 +16,7 @@ const NotificationList = ({
   notifications,
   changeNotificationStatus,
   isDeleteMode,
+  onOpenEditNotificationDialog,
 }: NotificationListProps) => {
   return (
     <View>
@@ -25,6 +27,7 @@ const NotificationList = ({
           key={index}
           notification={notification}
           changeNotificationStatus={changeNotificationStatus}
+          onOpenEditNotificationDialog={onOpenEditNotificationDialog}
         />
       ))}
     </View>

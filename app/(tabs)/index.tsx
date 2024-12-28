@@ -7,18 +7,27 @@ import AddNotificationDialog from "@/components/common/AddNotificationDialog";
 import NotificationListContainer from "@/components/home/NotificationListContainer";
 import { useDispatch } from "react-redux";
 import { setDeleteMode } from "@/redux/actions/commonActions";
+import EditNotificationDialog from "@/components/common/EditNotificationDialog";
 
 const GEOFENCE_TASK = "geofenceTask";
 
 const Index = () => {
   const [visibleAddNotificationDialog, setVisibleAddNotificationDialog] =
     useState<boolean>(false);
+  const [visibleEditNotificationDialog, setVisibleEditNotificationDialog] =
+    useState<boolean>(false);
+  const [editNotificationID, setEditNotificationID] = useState<string>("");
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-    dispatch(setDeleteMode(false))
-    }, [visibleAddNotificationDialog]);
+  useEffect(() => {
+    dispatch(setDeleteMode(false));
+  }, [visibleAddNotificationDialog]);
+
+  const onOpenEditNotificationDialog = (id: string) => {
+    setEditNotificationID(id);
+    setVisibleEditNotificationDialog(true);
+  };
 
   return (
     <>
@@ -31,7 +40,9 @@ const Index = () => {
           />
         )}
       >
-        <NotificationListContainer />
+        <NotificationListContainer
+          onOpenEditNotificationDialog={onOpenEditNotificationDialog}
+        />
         <View style={{ flex: 1, paddingTop: 32, alignItems: "center" }}>
           {/* 新規WEB通知ボタン */}
           <TouchableOpacity
@@ -59,6 +70,11 @@ const Index = () => {
       <AddNotificationDialog
         isOpen={visibleAddNotificationDialog}
         onClose={() => setVisibleAddNotificationDialog(false)}
+      />
+      <EditNotificationDialog
+        isOpen={visibleEditNotificationDialog}
+        notificationID={editNotificationID}
+        onClose={() => setVisibleEditNotificationDialog(false)}
       />
     </>
   );

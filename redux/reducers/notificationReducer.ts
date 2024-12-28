@@ -42,6 +42,13 @@ const notificationReducer = (
           notification.id === action.payload ? { ...notification, notificationID: action.payload.value } : notification
         ),
       };
+    case 'EDIT_NOTIFICATION':
+      return {
+        ...state,
+        notifications: state.notifications.map((notification) =>
+          notification.id === action.payload.id ? action.payload.notification : notification
+        ),
+      };
     default:
       return state;
   }

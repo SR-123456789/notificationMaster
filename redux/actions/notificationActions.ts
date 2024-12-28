@@ -5,6 +5,7 @@ export const MARK_AS_READ = 'MARK_AS_READ';
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 export const CHANGE_NOTIFICATION_STATUS = 'CHANGE_NOTIFICATION_STATUS';
 export const CHANGE_NOTIFICATION_ID='CHANGE_NOTIFICATION_ID'
+export const EDIT_NOTIFICATION='EDIT_NOTIFICATION'
 
 export const addNotification = (notification: NotificationListItem) => ({
   type: ADD_NOTIFICATION,
@@ -31,5 +32,11 @@ export const deleteNotification=(id:string)=>{
   return {
     type:REMOVE_NOTIFICATION,
     payload:id
+  }
+}
+export const editNotification=(id:string,notification:NotificationListItem)=>{
+  return {
+    type:EDIT_NOTIFICATION,
+    payload:{id,notification}
   }
 }

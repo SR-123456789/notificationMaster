@@ -18,7 +18,11 @@ import { setDeleteMode } from "@/redux/actions/commonActions";
 
 const GEOFENCE_TASK = "geofenceTask";
 
-const NotificationListContainer = () => {
+interface NotificationListContainerProps {
+  onOpenEditNotificationDialog: (v: string) => void;
+}
+
+const NotificationListContainer = ({onOpenEditNotificationDialog}:NotificationListContainerProps) => {
   const dispatch = useDispatch();
 
   const notifications = useSelector(
@@ -115,6 +119,7 @@ const NotificationListContainer = () => {
       deleteNotification={(id) => deleteNotification(id)}
       isDeleteMode={isDeleteMode}
       notifications={notifications}
+      onOpenEditNotificationDialog={(id) => onOpenEditNotificationDialog(id)}
       changeNotificationStatus={(id, v) => onChangeNotificationStatus(id, v)}
     />
   );
