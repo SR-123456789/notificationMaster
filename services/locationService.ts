@@ -13,34 +13,88 @@ export interface GeofenceRegion {
   url: string; // 各Geofenceに紐付くURL
 }
 
+// export const requestLocationPermission = async (): Promise<boolean> => {
+//   try {
+//     const foregroundResponse = await Location.requestForegroundPermissionsAsync();
+//     await new Promise(resolve => setTimeout(resolve, 200));
+
+//     if (foregroundResponse.status !== 'granted') {
+//       Alert.alert('フォアグラウンドでの位置情報の使用が許可されていません');
+//       return false;
+//     }
+//     // バックグラウンドの権限をリクエスト
+//     const backgroundResponse = await Location.requestBackgroundPermissionsAsync();
+//     await new Promise(resolve => setTimeout(resolve, 200));
+
+//     const RebackgroundResponse = await Location.requestBackgroundPermissionsAsync();
+
+//     console.log('Background Permissions:', RebackgroundResponse.status);
+
+//     if (RebackgroundResponse.status !== 'granted') {
+//       Alert.alert('バックグラウンドでの位置情報の使用が許可されていません');
+//       return false;
+//     }
+
+//     return true;
+//   } catch (e) {
+//     console.log(e)
+//     return false
+//   }
+//   // フォアグラウンドの権限をリクエスト
+
+// };
+
 export const requestLocationPermission = async (): Promise<boolean> => {
   try {
+    console.log('位置情報権限をリクエスト中...');
+
+    // フォアグラウンド権限をリクエスト
     const foregroundResponse = await Location.requestForegroundPermissionsAsync();
-    await new Promise(resolve => setTimeout(resolve, 200));
+    console.log('Foreground Permissions:', foregroundResponse.status);
 
     if (foregroundResponse.status !== 'granted') {
-      Alert.alert('フォアグラウンドでの位置情報の使用が許可されていません');
+      console.log('フォアグラウンド権限が拒否されました。');
+      Alert.alert(
+        '位置情報の権限が必要です',
+        'アプリの機能を利用するには位置情報の使用を許可してください。'
+      );
       return false;
     }
-    // バックグラウンドの権限をリクエスト
-    const backgroundResponse = await Location.requestBackgroundPermissionsAsync();
-    await new Promise(resolve => setTimeout(resolve, 200));
 
+    // バックグラウンド権限をリクエスト
+    await new Promise((resolve) => setTimeout(resolve, 500)); // 少し待機
+    const backgroundResponse = await Location.requestBackgroundPermissionsAsync();
     console.log('Background Permissions:', backgroundResponse.status);
 
     if (backgroundResponse.status !== 'granted') {
-      Alert.alert('バックグラウンドでの位置情報の使用が許可されていません');
-      return false;
+      console.log('バックグラウンド権限が拒否されました。再試行します。');
+      Alert.alert(
+        'バックグラウンド位置情報が必要です',
+        '特定の場所での通知を有効にするには、バックグラウンドでの位置情報使用を許可してください。'
+      );
+
+      // 再試行
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // 再試行の前に少し待機
+      const retryBackgroundResponse = await Location.requestBackgroundPermissionsAsync();
+      console.log('Retry Background Permissions:', retryBackgroundResponse.status);
+
+      if (retryBackgroundResponse.status !== 'granted') {
+        // Alert.alert(
+        //   '権限が拒否されました',
+        //   'バックグラウンド権限が許可されていないため、一部の機能が制限されます。'
+        // );
+        // return false;
+      }
     }
 
+    console.log('位置情報権限が正常に設定されました');
     return true;
   } catch (e) {
-    console.log(e)
-    return false
+    console.error('位置情報権限のリクエスト中にエラーが発生しました:', e);
+    return false;
   }
-  // フォアグラウンドの権限をリクエスト
-
 };
+
 
 const updateNotificationIDs = (json: any): any => {
   // JSONが配列の場合
