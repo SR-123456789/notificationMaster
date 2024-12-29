@@ -8,6 +8,7 @@ import NotificationListContainer from "@/components/home/NotificationListContain
 import { useDispatch } from "react-redux";
 import { setDeleteMode } from "@/redux/actions/commonActions";
 import EditNotificationDialog from "@/components/common/EditNotificationDialog";
+import FootAdBar from "@/components/common/FootAdBar";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -67,6 +68,7 @@ const Index = () => {
           </TouchableOpacity>
         </View>
       </ArupakaHeaderView>
+      <FootAdBar />
       <AddNotificationDialog
         isOpen={visibleAddNotificationDialog}
         onClose={() => setVisibleAddNotificationDialog(false)}

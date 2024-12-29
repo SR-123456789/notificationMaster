@@ -25,6 +25,7 @@ import { addNotification as addNotificationAction } from "@/redux/actions/notifi
 import { RootState } from "@/redux/store";
 import { setupNotficationSchedule } from "@/services/notificationService";
 import NotificationCommonSetting from "../NotificationDialog/NotificationCommonSetting";
+import FootAdBar from "./FootAdBar";
 
 const GEOFENCE_TASK = "geofenceTask";
 
@@ -312,6 +313,7 @@ const AddNotificationDialog = ({
           </ScrollView>
         </Animated.View>
       </View>
+      <FootAdBar />
     </Modal>
   );
 };
