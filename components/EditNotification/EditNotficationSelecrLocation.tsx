@@ -156,6 +156,7 @@ const EditNotificationSelectLocation = ({
           placeholder="地名を入力"
           value={searchQuery}
           onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
         />
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>検索</Text>
