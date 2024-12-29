@@ -124,7 +124,7 @@ const NotificationCommonSetting = ({notificationSentence,setNotificationSentence
         <TextInput
           ref={sentenceInputRef} // ref を設定
           style={styles.input}
-          placeholder="例: 検索する手間省けたね"
+          placeholder="例: 詳細（未記入可）"
           value={inputSentence}
           onChangeText={(text) => setInputSentence(text)}
           onFocus={() => {
